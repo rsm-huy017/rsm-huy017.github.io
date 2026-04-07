@@ -1,7 +1,0 @@
-.DS_Store
-.Rhistory
-.RData
-.Ruserdata
-.quarto/
-/.quarto/
-**/*.quarto_ipynb

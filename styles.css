@@ -1,46 +1,101 @@
 body {
   font-family: "Helvetica Neue", Arial, sans-serif;
-  line-height: 1.7;
-  color: #2c2c2c;
-  background-color: #fcfcf9;
+  line-height: 1.75;
+  color: #5F6763;
+  background-color: #F7F4EF;
 }
 
 .navbar {
-  background-color: #e8efe6;
-  border-bottom: 1px solid #d6dfd3;
+  background-color: #E7E1D8;
+  border-bottom: 1px solid #D8D1C7;
 }
 
 .navbar-brand,
 .navbar-nav .nav-link {
   font-weight: 600;
-  color: #2f4f3e !important;
+  color: #4E5B57 !important;
+  letter-spacing: 0.2px;
 }
 
-h1, h2, h3 {
-  color: #2f4f3e;
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link:focus {
+  color: #7A8F85 !important;
+}
+
+h1, h2, h3, h4 {
+  color: #4E5B57;
   font-weight: 700;
 }
 
+p, li {
+  color: #5F6763;
+}
+
 a {
-  color: #4c7a5a;
+  color: #7A8F85;
+  text-decoration: none;
 }
 
 a:hover {
-  color: #2f4f3e;
-}
-
-.about-entity {
-  background: white;
-  padding: 24px;
-  border-radius: 16px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-}
-
-img.rounded,
-.about-image {
-  border-radius: 18px;
+  color: #5E746B;
+  text-decoration: underline;
 }
 
 main.content {
-  max-width: 900px;
+  max-width: 920px;
+}
+
+.about-entity {
+  background: #FCFAF7;
+  padding: 28px;
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(78, 91, 87, 0.08);
+  border: 1px solid #E6DFD6;
+}
+
+.about-image,
+img.rounded {
+  border-radius: 18px;
+  box-shadow: 0 6px 18px rgba(78, 91, 87, 0.10);
+}
+
+.quarto-about-jolla .about-links .about-link {
+  background-color: #EFE8DF;
+  border-radius: 999px;
+  padding: 8px 14px;
+  margin-right: 8px;
+  color: #4E5B57 !important;
+  border: 1px solid #DDD4C9;
+}
+
+.quarto-about-jolla .about-links .about-link:hover {
+  background-color: #E1D6CA;
+  color: #5E746B !important;
+}
+
+code {
+  background-color: #EFE8DF;
+  color: #6D5F57;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #D8D1C7;
+  margin: 2rem 0;
+}
+
+img {
+  border-radius: 14px;
+}
+
+.table, table {
+  background-color: #FCFAF7;
+}
+
+blockquote {
+  border-left: 4px solid #C7A58A;
+  padding-left: 1rem;
+  color: #66706B;
 }
