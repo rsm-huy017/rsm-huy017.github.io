@@ -1,0 +1,20 @@
+---
+title: "Huiru Yang"
+image: images/profile.jpg
+about:
+  template: jolla
+  links:
+    - icon: envelope
+      text: Email
+      href: mailto:huy017@ucsd.edu
+    - icon: github
+      text: GitHub
+      href: https://github.com/
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/
+---
+
+Hello! I’m Huiru Yang.
+
+Welcome to my website.

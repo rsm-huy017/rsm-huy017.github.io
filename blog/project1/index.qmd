@@ -1,0 +1,14 @@
+---
+title: "Project 1"
+date: "2026-04-06"
+description: "A sample project page"
+image: "image.jpg"
+---
+
+## Section 1: Data
+
+I cleaned some data for this project.
+
+## Section 2: Analysis
+
+I analyzed the data and summarized the results.

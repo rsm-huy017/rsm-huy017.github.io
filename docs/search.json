@@ -1,0 +1,65 @@
+[
+  {
+    "objectID": "blog.html",
+    "href": "blog.html",
+    "title": "My Projects",
+    "section": "",
+    "text": "Project 1\n\n\nA sample project page\n\n\n\n\n\n\nApr 6, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nProject 2\n\n\nAnother sample project page\n\n\n\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "blog/project1/index.html",
+    "href": "blog/project1/index.html",
+    "title": "Project 1",
+    "section": "",
+    "text": "I cleaned some data for this project."
+  },
+  {
+    "objectID": "blog/project1/index.html#section-1-data",
+    "href": "blog/project1/index.html#section-1-data",
+    "title": "Project 1",
+    "section": "",
+    "text": "I cleaned some data for this project."
+  },
+  {
+    "objectID": "blog/project1/index.html#section-2-analysis",
+    "href": "blog/project1/index.html#section-2-analysis",
+    "title": "Project 1",
+    "section": "Section 2: Analysis",
+    "text": "Section 2: Analysis\nI analyzed the data and summarized the results."
+  },
+  {
+    "objectID": "resume.html",
+    "href": "resume.html",
+    "title": "Resume",
+    "section": "",
+    "text": "Download PDF file."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Huiru Yang",
+    "section": "",
+    "text": "Hello! I’m Huiru Yang.\nWelcome to my website."
+  },
+  {
+    "objectID": "blog/project2/index.html",
+    "href": "blog/project2/index.html",
+    "title": "Project 2",
+    "section": "",
+    "text": "Add content here."
+  },
+  {
+    "objectID": "blog/project2/index.html#section-1-overview",
+    "href": "blog/project2/index.html#section-1-overview",
+    "title": "Project 2",
+    "section": "",
+    "text": "Add content here."
+  },
+  {
+    "objectID": "blog/project2/index.html#section-2-results",
+    "href": "blog/project2/index.html#section-2-results",
+    "title": "Project 2",
+    "section": "Section 2: Results",
+    "text": "Section 2: Results\nAdd more content here."
+  }
+]
