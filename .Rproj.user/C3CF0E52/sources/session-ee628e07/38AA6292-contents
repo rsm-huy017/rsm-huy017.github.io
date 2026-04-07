@@ -12,6 +12,8 @@ website:
         text: Resume
       - href: blog.qmd
         text: Projects
+      - href: life.qmd
+        text: Life
 
 format:
   html:
