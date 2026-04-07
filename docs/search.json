@@ -39,7 +39,21 @@
     "href": "index.html",
     "title": "Huiru Yang",
     "section": "",
-    "text": "Hello! I’m Huiru Yang.\nWelcome to my website."
+    "text": "Hello! I’m Huiru Yang, a Master of Science in Business Analytics student at UC San Diego.\nI’m interested in data analysis, business strategy, and applying analytics to real-world decision making. My background includes accounting, operations, and project coordination, and I’m currently building stronger skills in data science and business analytics."
+  },
+  {
+    "objectID": "index.html#skills",
+    "href": "index.html#skills",
+    "title": "Huiru Yang",
+    "section": "Skills",
+    "text": "Skills\n\nData analysis\nBusiness analytics\nExcel / SQL / R\nProject coordination\nCommunication"
+  },
+  {
+    "objectID": "index.html#interests",
+    "href": "index.html#interests",
+    "title": "Huiru Yang",
+    "section": "Interests",
+    "text": "Interests\n\nMarketing analytics\nConsumer behavior\nOperations and supply chain\nBusiness intelligence"
   },
   {
     "objectID": "blog/project2/index.html",
