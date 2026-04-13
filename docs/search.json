@@ -4,35 +4,105 @@
     "href": "blog.html",
     "title": "My Projects",
     "section": "",
-    "text": "Project 1\n\n\nA sample project page\n\n\n\n\n\n\nApr 6, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nProject 2\n\n\nAnother sample project page\n\n\n\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
+    "text": "A/B Testing a Call to Action\n\n\n\n\n\n\nHuiru Yang\n\n\nApr 12, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nProject 1\n\n\nA sample project page\n\n\n\n\n\n\nApr 6, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\nProject 2\n\n\nAnother sample project page\n\n\n\n\n\n\nApr 6, 2026\n\n\n\n\n\n\nNo matching items"
   },
   {
-    "objectID": "blog/project1/index.html",
-    "href": "blog/project1/index.html",
-    "title": "Project 1",
+    "objectID": "blog/homework1/hw1_questions.html",
+    "href": "blog/homework1/hw1_questions.html",
+    "title": "A/B Testing a Call to Action",
     "section": "",
-    "text": "I cleaned some data for this project."
+    "text": "Suppose I run a website with a landing page that invites visitors to subscribe to a newsletter. A small design choice on that page is the wording of the call to action, or CTA. One version might say, “Sign up for our newsletter here!” while another says, “Stay up to date by signing up!” Even though the difference is only a few words, the language may affect whether a visitor chooses to subscribe.\nTo learn which message works better, I can run an A/B test. In an A/B test, visitors are randomly assigned to one of two versions of a page or feature. Here, some visitors see CTA A and others see CTA B. Because the assignment is random, the two groups should be comparable on average, so any systematic difference in sign-up behavior can be attributed to the CTA itself rather than to pre-existing differences across visitors.\nThe goal of this post is to use a simulated A/B test to explain several core ideas from classical frequentist statistics. By working in a setting where the true probabilities are known, it becomes easier to see how estimation, uncertainty, hypothesis testing, and common pitfalls such as repeated peeking fit together."
   },
   {
-    "objectID": "blog/project1/index.html#section-1-data",
-    "href": "blog/project1/index.html#section-1-data",
-    "title": "Project 1",
+    "objectID": "blog/homework1/hw1_questions.html#introduction",
+    "href": "blog/homework1/hw1_questions.html#introduction",
+    "title": "A/B Testing a Call to Action",
     "section": "",
-    "text": "I cleaned some data for this project."
+    "text": "Suppose I run a website with a landing page that invites visitors to subscribe to a newsletter. A small design choice on that page is the wording of the call to action, or CTA. One version might say, “Sign up for our newsletter here!” while another says, “Stay up to date by signing up!” Even though the difference is only a few words, the language may affect whether a visitor chooses to subscribe.\nTo learn which message works better, I can run an A/B test. In an A/B test, visitors are randomly assigned to one of two versions of a page or feature. Here, some visitors see CTA A and others see CTA B. Because the assignment is random, the two groups should be comparable on average, so any systematic difference in sign-up behavior can be attributed to the CTA itself rather than to pre-existing differences across visitors.\nThe goal of this post is to use a simulated A/B test to explain several core ideas from classical frequentist statistics. By working in a setting where the true probabilities are known, it becomes easier to see how estimation, uncertainty, hypothesis testing, and common pitfalls such as repeated peeking fit together."
   },
   {
-    "objectID": "blog/project1/index.html#section-2-analysis",
-    "href": "blog/project1/index.html#section-2-analysis",
-    "title": "Project 1",
-    "section": "Section 2: Analysis",
-    "text": "Section 2: Analysis\nI analyzed the data and summarized the results."
+    "objectID": "blog/homework1/hw1_questions.html#the-ab-test-as-a-statistical-problem",
+    "href": "blog/homework1/hw1_questions.html#the-ab-test-as-a-statistical-problem",
+    "title": "A/B Testing a Call to Action",
+    "section": "The A/B Test as a Statistical Problem",
+    "text": "The A/B Test as a Statistical Problem\nFrom a statistical perspective, each visitor produces a binary outcome: either they sign up for the newsletter or they do not. That means each observation can be modeled as a draw from a Bernoulli distribution, where the parameter \\(\\pi\\) represents the probability of signing up.\nBecause the CTA a visitor sees may influence that probability, it makes sense to define separate parameters for the two groups. Let \\(\\pi_A\\) be the probability of signing up after seeing CTA A, and let \\(\\pi_B\\) be the probability of signing up after seeing CTA B. For each person, the outcome is coded as 1 if they sign up and 0 otherwise.\nThe quantity of interest is the difference in sign-up rates between the two CTAs:\n\\[\n\\theta = \\pi_A - \\pi_B\n\\]\nIf \\(\\theta &gt; 0\\), CTA A performs better. If \\(\\theta &lt; 0\\), CTA B performs better. If \\(\\theta = 0\\), the two CTAs perform equally well.\nA natural estimator for this quantity is the difference in sample means:\n\\[\n\\hat{\\theta} = \\bar{X}_A - \\bar{X}_B\n\\]\nBecause each observation is either 0 or 1, the sample mean in each group is just the observed sign-up proportion. In other words, \\(\\bar{X}_A = \\hat{\\pi}_A\\) and \\(\\bar{X}_B = \\hat{\\pi}_B\\). So the difference in means is also the difference in observed conversion rates."
   },
   {
-    "objectID": "resume.html",
-    "href": "resume.html",
-    "title": "Resume",
+    "objectID": "blog/homework1/hw1_questions.html#simulating-data",
+    "href": "blog/homework1/hw1_questions.html#simulating-data",
+    "title": "A/B Testing a Call to Action",
+    "section": "Simulating Data",
+    "text": "Simulating Data\nIn a real experiment, the true sign-up probabilities would be unknown. That is exactly why we would run the A/B test in the first place. For this exercise, however, it is useful to choose the probabilities ourselves so that we know the truth and can evaluate how well our statistical tools recover it.\nI set the true sign-up probability for CTA A to \\(\\pi_A = 0.22\\) and the true sign-up probability for CTA B to \\(\\pi_B = 0.18\\). This means the true treatment effect is\n\\[\n\\theta = \\pi_A - \\pi_B = 0.04\n\\]\nSo in the population, CTA A outperforms CTA B by 4 percentage points. Using these values, I simulated 1,000 visitors in group A and 1,000 visitors in group B, storing each observation as a 1 if the visitor signed up and 0 otherwise. These simulated data will be used throughout the rest of the analysis.\nThe sample summary is shown below.\n\n\n\nSummary of the simulated A/B test sample\n\n\nQuantity\nValue\n\n\n\n\nEstimated sign-up rate for CTA A\n0.225\n\n\nEstimated sign-up rate for CTA B\n0.182\n\n\nEstimated treatment effect\n0.043\n\n\n\n\n\nIn this particular simulation, the estimated sign-up rate for CTA A is 0.225 and the estimated sign-up rate for CTA B is 0.182. The estimated treatment effect is therefore 0.043. These sample values are not exactly equal to the true probabilities, which is exactly what we should expect in finite samples."
+  },
+  {
+    "objectID": "blog/homework1/hw1_questions.html#the-law-of-large-numbers",
+    "href": "blog/homework1/hw1_questions.html#the-law-of-large-numbers",
+    "title": "A/B Testing a Call to Action",
+    "section": "The Law of Large Numbers",
+    "text": "The Law of Large Numbers\nThe Law of Large Numbers says that as the sample size grows, the sample mean converges to the population mean. In the A/B testing context, that idea is crucial because our estimator \\(\\hat{\\theta} = \\bar{X}_A - \\bar{X}_B\\) is built from sample means. If each group is large enough, the sample proportions should settle down near their true values, and the estimated difference should get closer to the true treatment effect.\nTo illustrate this, I computed the element-wise difference between the simulated draws from groups A and B and then calculated the cumulative average of those differences. This running mean shows what the estimate looks like as more and more observations are included.\n\n\n\n\n\n\n\n\n\nAt the beginning of the figure, the running average is noisy because early estimates are based on very little information. A few unusual outcomes can move the estimate a lot when the sample is tiny. As the sample size grows, however, the running average becomes more stable and moves toward the true value of 0.04. This is the Law of Large Numbers in action: larger samples deliver more stable and more reliable estimates."
+  },
+  {
+    "objectID": "blog/homework1/hw1_questions.html#bootstrap-standard-errors",
+    "href": "blog/homework1/hw1_questions.html#bootstrap-standard-errors",
+    "title": "A/B Testing a Call to Action",
+    "section": "Bootstrap Standard Errors",
+    "text": "Bootstrap Standard Errors\nAn estimate by itself is not enough. We also want to know how much uncertainty surrounds it. One way to measure that uncertainty is with a standard error, which captures how much an estimator would vary across repeated samples.\nThe bootstrap provides a practical way to approximate this variability. The basic idea is to treat the observed sample as a stand-in for the population, repeatedly resample from it with replacement, and recompute the statistic of interest each time. The spread of those bootstrap estimates then approximates the sampling variability of the estimator.\nIn this analysis, I generated 1,000 bootstrap replications of the treatment effect. For each bootstrap sample, I resampled the observations from group A and group B separately and recalculated the difference in means. The standard deviation of those bootstrap estimates is the bootstrap standard error.\n\n\n\n\n\n\n\n\n\nThe bootstrap distribution is centered near the original sample estimate and shows the range of values that appear due to sampling variability. The bootstrap standard error is 0.0171, while the usual analytical standard error is 0.0180. These two values are quite close, which is reassuring. It suggests that both the resampling approach and the formula-based approach are telling a similar story about uncertainty in the estimate.\nA 95% confidence interval based on the bootstrap standard error is shown below.\n\n\n\nEstimated uncertainty around the treatment effect\n\n\n\nQuantity\nValue\n\n\n\n\n4\nBootstrap standard error\n0.0171\n\n\n5\nAnalytical standard error\n0.0180\n\n\n6\n95% CI lower bound\n0.0095\n\n\n7\n95% CI upper bound\n0.0765\n\n\n\n\n\nThis interval runs from 0.0095 to 0.0765. Because the entire interval lies above zero in this simulation, it suggests that CTA A outperforms CTA B."
+  },
+  {
+    "objectID": "blog/homework1/hw1_questions.html#the-central-limit-theorem",
+    "href": "blog/homework1/hw1_questions.html#the-central-limit-theorem",
+    "title": "A/B Testing a Call to Action",
+    "section": "The Central Limit Theorem",
+    "text": "The Central Limit Theorem\nThe Central Limit Theorem is one of the key reasons that classical inference works so well. It says that under fairly general conditions, the sampling distribution of a properly standardized sample mean becomes approximately normal as the sample size grows. Since our estimator is a difference in sample means, the same general logic applies here as well.\nTo demonstrate this idea, I repeatedly simulated the treatment effect estimate using different sample sizes: 25, 50, 100, and 500 observations per group. For each sample size, I generated 1,000 estimates and plotted their distributions.\n\n\n\n\n\n\n\n\n\nThe pattern is what the Central Limit Theorem predicts. When the sample size is small, the distribution is somewhat rough and dispersed. As the sample size increases, the distribution becomes more concentrated around the true value and also looks more bell-shaped. This matters because normal approximations are the foundation of confidence intervals and hypothesis tests. The theorem explains why those approximations become increasingly accurate in larger samples."
+  },
+  {
+    "objectID": "blog/homework1/hw1_questions.html#hypothesis-testing",
+    "href": "blog/homework1/hw1_questions.html#hypothesis-testing",
+    "title": "A/B Testing a Call to Action",
+    "section": "Hypothesis Testing",
+    "text": "Hypothesis Testing\nA common goal in an A/B test is to assess whether the observed difference could plausibly be explained by random chance alone. This leads to a hypothesis test.\nThe null hypothesis is that the two CTAs perform equally well:\n\\[\nH_0: \\theta = 0\n\\]\nThe alternative hypothesis is that the treatment effect is not zero:\n\\[\nH_A: \\theta \\neq 0\n\\]\nTo evaluate the evidence against the null, I compute a z-statistic by dividing the estimated treatment effect by its analytical standard error:\n\\[\nz = \\frac{\\hat{\\theta}}{\\text{SE}(\\hat{\\theta})}\n\\]\nLarge values of the statistic in absolute value indicate that the observed estimate is far from zero relative to the amount of sampling noise we would expect under the null hypothesis.\n\n\n\nHypothesis test results\n\n\n\nQuantity\nValue\n\n\n\n\n8\nz-statistic\n2.3917\n\n\n9\np-value\n0.0168\n\n\n\n\n\nIn this simulation, the z-statistic is 2.392 and the two-sided p-value is 0.0168. Because the p-value is below 0.05, I would reject the null hypothesis at the 5% significance level. In practical terms, the data provide evidence that the wording of the CTA affects sign-up behavior.\nThat said, the p-value should not be interpreted as the probability that the null hypothesis is true. Instead, it is the probability of observing a result at least this extreme if the null hypothesis were true. That distinction is central to the frequentist framework."
+  },
+  {
+    "objectID": "blog/homework1/hw1_questions.html#the-t-test-as-a-regression",
+    "href": "blog/homework1/hw1_questions.html#the-t-test-as-a-regression",
+    "title": "A/B Testing a Call to Action",
+    "section": "The T-Test as a Regression",
+    "text": "The T-Test as a Regression\nOne useful insight in applied statistics is that many familiar hypothesis tests can also be expressed as regressions. In the A/B testing setup, I can define a treatment indicator \\(D_i\\) that equals 1 if observation \\(i\\) belongs to CTA A and 0 if it belongs to CTA B. Then I estimate the linear model\n\\[\nY_i = \\alpha + \\beta D_i + \\varepsilon_i\n\\]\nwhere \\(Y_i\\) is the sign-up outcome.\nIn this regression, the intercept \\(\\alpha\\) is the mean outcome in the control group, which is group B, and the coefficient \\(\\beta\\) is the difference in mean outcomes between group A and group B. That means \\(\\beta\\) is exactly the treatment effect estimator from the two-sample comparison.\n\n\n\nRegression version of the A/B test\n\n\nQuantity\nValue\n\n\n\n\nCoefficient on D\n0.0430\n\n\nStandard error\n0.0180\n\n\nt-statistic\n2.3905\n\n\np-value\n0.0169\n\n\n\n\n\nThe estimated coefficient on the treatment indicator is 0.043, which exactly matches the difference in sample means. The corresponding t-statistic and p-value also lead to the same substantive conclusion as the earlier hypothesis test. This illustrates an important connection: the classic two-sample t-test and a regression with a binary treatment indicator are two ways of expressing the same underlying analysis.\nThat connection becomes especially useful in more complicated settings, because regression provides a flexible framework for adding covariates, interactions, and more elaborate designs while preserving the same basic intuition."
+  },
+  {
+    "objectID": "blog/homework1/hw1_questions.html#the-problem-with-peeking",
+    "href": "blog/homework1/hw1_questions.html#the-problem-with-peeking",
+    "title": "A/B Testing a Call to Action",
+    "section": "The Problem with Peeking",
+    "text": "The Problem with Peeking\nOne of the most common mistakes in experimentation is peeking. Peeking means repeatedly checking the data as they arrive and stopping the experiment as soon as a statistically significant result appears. This behavior is tempting because it feels efficient, but it changes the properties of the test.\nA standard hypothesis test with a 5% significance level is designed so that, under the null hypothesis, the false positive rate is about 5% when the test is conducted once at a pre-specified sample size. But if I test after 100 observations, then again after 200, then again after 300, and continue until 1,000, I create many chances to get a significant result just by luck. As a result, the overall false positive rate becomes larger than 5%.\nTo illustrate this, I simulated 5,000 experiments under the null hypothesis where the two CTAs actually have the same conversion probability of 0.20. In each simulated experiment, I checked the p-value every 100 observations and recorded whether significance appeared at any point.\n\n\n\nEffect of repeated peeking under the null\n\n\nQuantity\nValue\n\n\n\n\nFalse positive rate with repeated peeking\n0.1836\n\n\n\n\n\nThe simulated false positive rate with repeated peeking is 0.184, which is substantially larger than 0.05. This means that even when there is truly no effect, repeatedly checking the data and stopping when significance appears can make a useless CTA look successful.\nThe lesson is simple but important: an experiment should ideally have a pre-registered stopping rule or sample size determined in advance. If interim analyses are necessary, then they should be handled with methods specifically designed for sequential testing. Otherwise, ordinary p-values and confidence intervals can become misleading."
+  },
+  {
+    "objectID": "blog/homework1/hw1_questions.html#conclusion",
+    "href": "blog/homework1/hw1_questions.html#conclusion",
+    "title": "A/B Testing a Call to Action",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis simulated A/B test provides a concrete way to understand several core ideas from classical frequentist statistics. The setup is simple: compare two versions of a call to action and estimate the difference in sign-up rates. But inside that simple comparison are many of the main tools of statistical inference.\nThe Law of Large Numbers explains why our sample averages become more stable as the sample grows. The bootstrap gives a flexible way to measure uncertainty. The Central Limit Theorem explains why sampling distributions become approximately normal, allowing us to use z-tests and confidence intervals. Hypothesis testing offers a formal way to assess whether the observed effect is consistent with random chance. Regression shows that the same comparison can be expressed in a broader and more flexible modeling framework. And the peeking example demonstrates how easy it is to misuse these tools if experimental decisions are made after seeing the data.\nSubstantively, this simulation was built so that CTA A truly performed better than CTA B, and the sample analysis was able to recover that signal. More importantly, the exercise shows that frequentist methods are not just abstract formulas. They are practical tools for making decisions under uncertainty, and A/B testing is one of the clearest real-world settings in which those tools come to life."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Huiru Yang",
     "section": "",
-    "text": "Download PDF file."
+    "text": "Hello! I’m Huiru Yang, a Master of Science in Business Analytics student at UC San Diego.\nI’m interested in data analysis, business strategy, and applying analytics to real-world decision making. My background includes accounting, operations, and project coordination, and I’m currently building stronger skills in data science and business analytics."
+  },
+  {
+    "objectID": "index.html#skills",
+    "href": "index.html#skills",
+    "title": "Huiru Yang",
+    "section": "Skills",
+    "text": "Skills\n\nData analysis\nBusiness analytics\nExcel / SQL / R\nProject coordination\nCommunication"
+  },
+  {
+    "objectID": "index.html#interests",
+    "href": "index.html#interests",
+    "title": "Huiru Yang",
+    "section": "Interests",
+    "text": "Interests\n\nMarketing analytics\nConsumer behavior\nOperations and supply chain\nBusiness intelligence"
   },
   {
     "objectID": "life.html",
@@ -70,25 +140,32 @@
     "text": "My Little Cats\nOne of the happiest parts of my life is spending time with my little cats.\nThey are cute, gentle, and always bring warmth to my day.\nNo matter how busy or tired I feel, seeing them instantly makes me feel better.\nLiving with them has taught me to appreciate companionship, comfort, and the joy of small everyday moments.\nThey are not just pets to me — they are an important part of my life."
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Huiru Yang",
+    "objectID": "resume.html",
+    "href": "resume.html",
+    "title": "Resume",
     "section": "",
-    "text": "Hello! I’m Huiru Yang, a Master of Science in Business Analytics student at UC San Diego.\nI’m interested in data analysis, business strategy, and applying analytics to real-world decision making. My background includes accounting, operations, and project coordination, and I’m currently building stronger skills in data science and business analytics."
+    "text": "Download PDF file."
   },
   {
-    "objectID": "index.html#skills",
-    "href": "index.html#skills",
-    "title": "Huiru Yang",
-    "section": "Skills",
-    "text": "Skills\n\nData analysis\nBusiness analytics\nExcel / SQL / R\nProject coordination\nCommunication"
+    "objectID": "blog/project1/index.html",
+    "href": "blog/project1/index.html",
+    "title": "Project 1",
+    "section": "",
+    "text": "I cleaned some data for this project."
   },
   {
-    "objectID": "index.html#interests",
-    "href": "index.html#interests",
-    "title": "Huiru Yang",
-    "section": "Interests",
-    "text": "Interests\n\nMarketing analytics\nConsumer behavior\nOperations and supply chain\nBusiness intelligence"
+    "objectID": "blog/project1/index.html#section-1-data",
+    "href": "blog/project1/index.html#section-1-data",
+    "title": "Project 1",
+    "section": "",
+    "text": "I cleaned some data for this project."
+  },
+  {
+    "objectID": "blog/project1/index.html#section-2-analysis",
+    "href": "blog/project1/index.html#section-2-analysis",
+    "title": "Project 1",
+    "section": "Section 2: Analysis",
+    "text": "Section 2: Analysis\nI analyzed the data and summarized the results."
   },
   {
     "objectID": "blog/project2/index.html",
