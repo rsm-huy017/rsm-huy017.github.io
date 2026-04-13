@@ -13,6 +13,7 @@ execute:
 ```{r}
 library(ggplot2)
 library(knitr)
+library(kableExtra)
 
 set.seed(495)
 
@@ -132,6 +133,20 @@ peek_table <- data.frame(
   Quantity = "False positive rate with repeated peeking",
   Value = peeking_fp_rate
 )
+
+nice_kable <- function(x, caption_text) {
+  kable(
+    x,
+    digits = 4,
+    caption = caption_text,
+    booktabs = TRUE,
+    align = c("l", "r")
+  ) |>
+    kable_styling(
+      full_width = FALSE,
+      bootstrap_options = c("striped", "hover", "condensed")
+    )
+}
 ```
 
 ## Introduction
@@ -179,7 +194,7 @@ So in the population, CTA A outperforms CTA B by 4 percentage points. Using thes
 The sample summary is shown below.
 
 ```{r}
-kable(summary_table[1:3, ], digits = 4, caption = "Summary of the simulated A/B test sample")
+nice_kable(summary_table[1:3, ], "Summary of the simulated A/B test sample")
 ```
 
 In this particular simulation, the estimated sign-up rate for CTA A is `r sprintf("%.3f", hat_pi_A)` and the estimated sign-up rate for CTA B is `r sprintf("%.3f", hat_pi_B)`. The estimated treatment effect is therefore `r sprintf("%.3f", hat_theta)`. These sample values are not exactly equal to the true probabilities, which is exactly what we should expect in finite samples.
@@ -229,7 +244,7 @@ The bootstrap distribution is centered near the original sample estimate and sho
 A 95% confidence interval based on the bootstrap standard error is shown below.
 
 ```{r}
-kable(summary_table[4:7, ], digits = 4, caption = "Estimated uncertainty around the treatment effect")
+nice_kable(summary_table[4:7, ], "Estimated uncertainty around the treatment effect")
 ```
 
 This interval runs from `r sprintf("%.4f", ci_lower)` to `r sprintf("%.4f", ci_upper)`. Because the entire interval lies above zero in this simulation, it suggests that CTA A outperforms CTA B.
@@ -279,7 +294,7 @@ $$
 Large values of the statistic in absolute value indicate that the observed estimate is far from zero relative to the amount of sampling noise we would expect under the null hypothesis.
 
 ```{r}
-kable(summary_table[8:9, ], digits = 4, caption = "Hypothesis test results")
+nice_kable(summary_table[8:9, ], "Hypothesis test results")
 ```
 
 In this simulation, the z-statistic is `r sprintf("%.3f", z_stat)` and the two-sided p-value is `r sprintf("%.4f", p_value)`. Because the p-value is below 0.05, I would reject the null hypothesis at the 5% significance level. In practical terms, the data provide evidence that the wording of the CTA affects sign-up behavior.
@@ -299,7 +314,7 @@ where $Y_i$ is the sign-up outcome.
 In this regression, the intercept $\alpha$ is the mean outcome in the control group, which is group B, and the coefficient $\beta$ is the difference in mean outcomes between group A and group B. That means $\beta$ is exactly the treatment effect estimator from the two-sample comparison.
 
 ```{r}
-kable(reg_table, digits = 4, caption = "Regression version of the A/B test")
+nice_kable(reg_table, "Regression version of the A/B test")
 ```
 
 The estimated coefficient on the treatment indicator is `r sprintf("%.3f", reg_coef)`, which exactly matches the difference in sample means. The corresponding t-statistic and p-value also lead to the same substantive conclusion as the earlier hypothesis test. This illustrates an important connection: the classic two-sample t-test and a regression with a binary treatment indicator are two ways of expressing the same underlying analysis.
@@ -315,7 +330,7 @@ A standard hypothesis test with a 5% significance level is designed so that, und
 To illustrate this, I simulated 5,000 experiments under the null hypothesis where the two CTAs actually have the same conversion probability of 0.20. In each simulated experiment, I checked the p-value every 100 observations and recorded whether significance appeared at any point.
 
 ```{r}
-kable(peek_table, digits = 4, caption = "Effect of repeated peeking under the null")
+nice_kable(peek_table, "Effect of repeated peeking under the null")
 ```
 
 The simulated false positive rate with repeated peeking is `r sprintf("%.3f", peeking_fp_rate)`, which is substantially larger than 0.05. This means that even when there is truly no effect, repeatedly checking the data and stopping when significance appears can make a useless CTA look successful.
