@@ -1,0 +1,530 @@
+---
+title: "Replication of Card and Krueger (1994)"
+subtitle: "Minimum Wages and Employment: A Case Study of the Fast-Food Industry in New Jersey and Pennsylvania"
+author: "Huiru Yang"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    df-print: paged
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+options(scipen = 999, digits = 4)
+
+# ============================================================
+# Card & Krueger (1994) replication
+# IMPORTANT:
+# 1. Put this .qmd file in the same folder as public.dat
+# 2. If needed, change the path below from "public.dat"
+# ============================================================
+
+# Variable names
+var_names <- c(
+  "sheet","chain","co_owned","state","southj","centralj","northj","pa1","pa2","shore",
+  "ncalls","empft","emppt","nmgrs","wage_st","inctime","firstinc","bonus","pctaff","meals",
+  "open","hrsopen","psoda","pfry","pentree","nregs","nregs11","type2","status2","date2",
+  "ncalls2","empft2","emppt2","nmgrs2","wage_st2","inctime2","firstin2","special2","meals2",
+  "open2r","hrsopen2","psoda2","pfry2","pentree2","nregs2","nregs112"
+)
+
+# READ THE DATA CORRECTLY:
+# public.dat should be read as whitespace-delimited, not fixed-width
+dat <- read.table(
+  file = "public.dat",
+  header = FALSE,
+  na.strings = ".",
+  col.names = var_names
+)
+
+# make sure everything is numeric
+dat[] <- lapply(dat, as.numeric)
+
+# -----------------------------
+# Variable construction
+# -----------------------------
+dat$nj <- dat$state
+
+dat$bk     <- as.numeric(dat$chain == 1)
+dat$kfc    <- as.numeric(dat$chain == 2)
+dat$roys   <- as.numeric(dat$chain == 3)
+dat$wendys <- as.numeric(dat$chain == 4)
+
+# Full-time-equivalent employment
+dat$fte1 <- dat$empft + dat$nmgrs + 0.5 * dat$emppt
+dat$fte2 <- dat$empft2 + dat$nmgrs2 + 0.5 * dat$emppt2
+
+# Status indicators
+dat$closed_perm <- as.numeric(dat$status2 == 3)
+dat$temp_closed <- as.numeric(dat$status2 %in% c(2,4,5))
+
+# Following the paper, set wave-2 employment to 0 for permanently closed stores
+dat$fte2[dat$status2 == 3] <- 0
+
+# Other outcomes
+dat$fracft1 <- ifelse(dat$fte1 > 0, 100 * dat$empft / dat$fte1, NA)
+dat$fracft2 <- ifelse(dat$fte2 > 0, 100 * dat$empft2 / dat$fte2, NA)
+
+dat$meal1 <- dat$psoda + dat$pfry + dat$pentree
+dat$meal2 <- dat$psoda2 + dat$pfry2 + dat$pentree2
+
+dat$demp <- dat$fte2 - dat$fte1
+dat$dlog_meal <- log(dat$meal2) - log(dat$meal1)
+
+# Wage gap variable used in the paper
+dat$gap <- ifelse(dat$state == 0, 0,
+                  ifelse(dat$wage_st >= 5.05, 0,
+                         ifelse(dat$wage_st > 0, (5.05 - dat$wage_st) / dat$wage_st, NA)))
+
+# Indicators used for descriptive statistics
+dat$w425_1 <- 100 * as.numeric(dat$wage_st == 4.25)
+dat$w505_2 <- 100 * as.numeric(dat$wage_st2 == 5.05)
+dat$bonus1 <- 100 * as.numeric(dat$bonus == 1)
+dat$bonus2 <- 100 * as.numeric(dat$special2 == 1)
+
+# Regions
+dat$region <- NA
+dat$region[dat$southj == 1]   <- "South NJ"
+dat$region[dat$centralj == 1] <- "Central NJ"
+dat$region[dat$northj == 1]   <- "North NJ"
+dat$region[dat$pa1 == 1]      <- "PA region 1"
+dat$region[dat$pa2 == 1]      <- "PA region 2"
+dat$region <- factor(dat$region)
+
+# Chain labels
+dat$chain_name <- ifelse(dat$chain == 1, "Burger King",
+                  ifelse(dat$chain == 2, "KFC",
+                  ifelse(dat$chain == 3, "Roy Rogers",
+                  ifelse(dat$chain == 4, "Wendy's", NA))))
+
+# Helper functions
+m <- function(x) mean(x, na.rm = TRUE)
+s <- function(x) sd(x, na.rm = TRUE)
+se <- function(x) sd(x, na.rm = TRUE) / sqrt(sum(!is.na(x)))
+fmt2 <- function(x) sprintf("%.2f", x)
+fmt3 <- function(x) sprintf("%.3f", x)
+pct <- function(x) 100 * mean(x, na.rm = TRUE)
+
+nj <- subset(dat, state == 1)
+pa <- subset(dat, state == 0)
+
+# -----------------------------
+# Table 2 replication (selected rows)
+# -----------------------------
+table2_rep <- data.frame(
+  Variable = c(
+    "Burger King (%)",
+    "KFC (%)",
+    "Roy Rogers (%)",
+    "Wendy's (%)",
+    "Company-owned (%)",
+    "Wave 1: FTE employment",
+    "Wave 1: Percentage full-time employees",
+    "Wave 1: Starting wage",
+    "Wave 1: Wage = $4.25 (%)",
+    "Wave 1: Price of full meal",
+    "Wave 1: Hours open (weekday)",
+    "Wave 1: Recruiting bonus (%)",
+    "Wave 2: FTE employment",
+    "Wave 2: Percentage full-time employees",
+    "Wave 2: Starting wage",
+    "Wave 2: Wage = $5.05 (%)",
+    "Wave 2: Price of full meal",
+    "Wave 2: Hours open (weekday)",
+    "Wave 2: Recruiting bonus (%)"
+  ),
+  NJ = c(
+    pct(nj$bk), pct(nj$kfc), pct(nj$roys), pct(nj$wendys), pct(nj$co_owned),
+    m(nj$fte1), m(nj$fracft1), m(nj$wage_st), m(nj$w425_1),
+    m(nj$meal1), m(nj$hrsopen), m(nj$bonus1),
+    m(nj$fte2), m(nj$fracft2), m(nj$wage_st2), m(nj$w505_2),
+    m(nj$meal2), m(nj$hrsopen2), m(nj$bonus2)
+  ),
+  PA = c(
+    pct(pa$bk), pct(pa$kfc), pct(pa$roys), pct(pa$wendys), pct(pa$co_owned),
+    m(pa$fte1), m(pa$fracft1), m(pa$wage_st), m(pa$w425_1),
+    m(pa$meal1), m(pa$hrsopen), m(pa$bonus1),
+    m(pa$fte2), m(pa$fracft2), m(pa$wage_st2), m(pa$w505_2),
+    m(pa$meal2), m(pa$hrsopen2), m(pa$bonus2)
+  )
+)
+
+# -----------------------------
+# Table 3 replication
+# required: first 3 rows x first 3 columns
+# -----------------------------
+pa_before <- m(pa$fte1)
+nj_before <- m(nj$fte1)
+
+pa_after <- m(pa$fte2)
+nj_after <- m(nj$fte2)
+
+pa_change <- pa_after - pa_before
+nj_change <- nj_after - nj_before
+did_raw <- nj_change - pa_change
+
+table3_rep <- data.frame(
+  Statistic = c(
+    "1. FTE employment before, all available observations",
+    "2. FTE employment after, all available observations",
+    "3. Change in mean FTE employment"
+  ),
+  PA = c(pa_before, pa_after, pa_change),
+  NJ = c(nj_before, nj_after, nj_change)
+)
+table3_rep$`NJ - PA` <- table3_rep$NJ - table3_rep$PA
+
+# Balanced sample DID
+balanced <- subset(dat, !is.na(fte1) & !is.na(fte2))
+did_balanced <- m(subset(balanced, state == 1)$demp) - m(subset(balanced, state == 0)$demp)
+
+# -----------------------------
+# Table 4 column (i)
+# paper notes regression sample is stores with available data
+# on employment and starting wages in waves 1 and 2
+# -----------------------------
+reg_sample <- subset(dat,
+                     !is.na(demp) & !is.na(nj) &
+                     !is.na(wage_st) & !is.na(wage_st2))
+
+model_t4c1 <- lm(demp ~ nj, data = reg_sample)
+
+coef_t4c1 <- coef(summary(model_t4c1))["nj", "Estimate"]
+se_t4c1   <- coef(summary(model_t4c1))["nj", "Std. Error"]
+t_t4c1    <- coef(summary(model_t4c1))["nj", "t value"]
+n_t4c1    <- nobs(model_t4c1)
+
+# -----------------------------
+# Additional analysis 1: DID graph
+# -----------------------------
+did_plot <- data.frame(
+  period = factor(c("Before", "After"), levels = c("Before", "After")),
+  PA = c(pa_before, pa_after),
+  NJ = c(nj_before, nj_after)
+)
+
+# -----------------------------
+# Additional analysis 2: Price pass-through
+# -----------------------------
+price_sample <- subset(dat, !is.na(meal1) & !is.na(meal2) & !is.na(nj))
+model_price <- lm(dlog_meal ~ nj, data = price_sample)
+coef_price <- coef(summary(model_price))["nj", "Estimate"]
+se_price   <- coef(summary(model_price))["nj", "Std. Error"]
+t_price    <- coef(summary(model_price))["nj", "t value"]
+n_price    <- nobs(model_price)
+
+# -----------------------------
+# Additional analysis 3: Regression with chain controls
+# -----------------------------
+model_chain <- lm(demp ~ nj + factor(chain) + co_owned, data = reg_sample)
+coef_chain <- coef(summary(model_chain))["nj", "Estimate"]
+se_chain   <- coef(summary(model_chain))["nj", "Std. Error"]
+t_chain    <- coef(summary(model_chain))["nj", "t value"]
+
+# -----------------------------
+# Comparison table
+# -----------------------------
+compare_main <- data.frame(
+  Quantity = c(
+    "Table 3: PA before",
+    "Table 3: NJ before",
+    "Table 3: PA after",
+    "Table 3: NJ after",
+    "Table 3: PA change",
+    "Table 3: NJ change",
+    "Table 3: DID",
+    "Table 4 col (i): NJ dummy"
+  ),
+  My_replication = c(
+    pa_before, nj_before, pa_after, nj_after,
+    pa_change, nj_change, did_raw, coef_t4c1
+  )
+)
+```
+
+# Introduction
+
+This post replicates the main analysis from **Card and Krueger (1994), “Minimum Wages and Employment: A Case Study of the Fast-Food Industry in New Jersey and Pennsylvania.”** The paper studies one of the most important questions in labor economics: **does raising the minimum wage reduce employment?** In the standard competitive model, a binding minimum wage should raise the cost of low-wage labor and reduce firms’ demand for workers. Card and Krueger revisit that prediction in a setting where a real policy change created a strong natural experiment.
+
+The policy shock is unusually clear. On **April 1, 1992**, New Jersey raised its minimum wage from **\$4.25 to \$5.05 per hour**. Pennsylvania did not adopt the same increase at the same time. The authors surveyed fast-food restaurants in New Jersey and eastern Pennsylvania just before the policy change and then again several months later. This creates a natural **difference-in-differences (DID)** design: compare employment changes in New Jersey, the treated state, with employment changes in Pennsylvania, the control state.
+
+This paper is especially attractive for replication because the design is simple, transparent, and directly tied to an important economic debate. The authors are not just comparing different kinds of workers at one point in time, which would be vulnerable to omitted-variable bias and selection problems. Instead, they compare the same industry across two nearby locations, before and after a specific law changed. That setup makes the causal question much sharper.
+
+The paper became famous because its central finding ran against the conventional textbook prediction. Rather than finding that a higher minimum wage reduced fast-food employment, Card and Krueger found **no evidence that employment fell in New Jersey relative to Pennsylvania**. In some specifications, the point estimate was actually positive. This result became one of the most influential findings in empirical labor economics and helped reshape the modern literature on minimum wages.
+
+In this replication, I satisfy all three required parts of the assignment. First, I explain what the authors are studying and why their design may support a causal interpretation. Second, I replicate the key statistical findings requested in the assignment: selected results from **Table 2**, the **first three rows and first three columns of Table 3**, and **Table 4 column (i)**. Third, for the required “do one additional thing” component, I go beyond the minimum requirement in several ways: I graph the main DID result, I estimate whether firms adjusted through prices, and I explain in more detail why DID is the correct empirical strategy in this setting and what assumptions it relies on.
+
+# Data and Variable Construction
+
+The data used here come from the public fast-food survey files associated with the paper. The main data file is `public.dat`, a fixed-width dataset containing information from two waves of interviews. The first wave took place shortly before the minimum-wage increase, and the second occurred several months afterward. The sample includes Burger King, KFC, Roy Rogers, and Wendy’s restaurants in New Jersey and eastern Pennsylvania.
+
+The central outcome variable is **full-time-equivalent employment (FTE)**. Following the paper, I construct it as:
+
+\[
+FTE = \text{full-time employees} + \text{managers} + 0.5 \times \text{part-time employees}.
+\]
+
+This construction matters because fast-food restaurants rely heavily on part-time labor. Treating part-time workers as one-half of a full-time worker provides a standardized measure of the effective size of a restaurant’s workforce and is consistent with the way the original paper reports employment.
+
+I also follow the paper’s treatment of permanently closed stores. If a store was permanently closed by the second wave, I set second-wave employment equal to zero. This is important for policy analysis. If the minimum wage caused some restaurants to close, then excluding those stores would understate the true employment effect. Including closures produces a more complete measure of what happened to employment in the original sample of establishments.
+
+I construct two main explanatory variables. The first is `nj`, which equals 1 for New Jersey and 0 for Pennsylvania. This is the main DID treatment indicator. The second is the paper’s **gap** variable, which measures how much a New Jersey store’s starting wage would have needed to increase proportionally to reach the new \$5.05 minimum. This variable captures treatment intensity, since a store already paying \$5.05 or more should be less affected by the law than a store initially paying \$4.25.
+
+# Why Difference-in-Differences Is the Right Design
+
+The main empirical challenge is that New Jersey and Pennsylvania stores do not begin at identical employment levels. Pennsylvania stores are somewhat larger on average before the policy change. That means a simple comparison of employment levels after the law would be misleading. It would mix the effect of the policy with pre-existing structural differences between the two states.
+
+Difference-in-differences solves this problem by comparing **changes over time** rather than just levels. The DID estimate is:
+
+\[
+\text{DID} = (\bar{Y}_{NJ,after} - \bar{Y}_{NJ,before}) - (\bar{Y}_{PA,after} - \bar{Y}_{PA,before}).
+\]
+
+This estimator removes permanent baseline differences between New Jersey and Pennsylvania and also removes any broad shocks affecting both groups over time. What remains is the relative change in the treated state after the policy.
+
+The crucial identifying assumption is the **parallel trends assumption**: in the absence of the minimum-wage increase, employment in New Jersey would have changed in the same way as employment in Pennsylvania. That assumption is not directly testable with only one clean pre-period in the survey data, so it should be treated as an assumption rather than a proven fact. Still, the design makes it plausible. The treatment and control groups are geographically close, operate in the same industry, are exposed to similar macroeconomic conditions, and are observed over the same time window.
+
+At the same time, DID is not automatic proof of causality. If New Jersey was hit by a different unobserved demand shock at exactly the same time as the wage increase, then the DID estimate could reflect more than the policy. This limitation is worth acknowledging. Even so, compared with a simple before-after comparison in New Jersey alone or a simple cross-sectional comparison between states, DID is clearly the right empirical strategy here.
+
+# Replication of Table 2 (Selected Statistics)
+
+The assignment asks for replication of some of Table 2. These descriptive statistics are important because they establish the baseline comparability of the two states and show how the wage distribution shifted after the law.
+
+```{r}
+#| label: table2-replication
+#| results: asis
+
+table2_show <- table2_rep
+table2_show$NJ <- round(table2_show$NJ, 2)
+table2_show$PA <- round(table2_show$PA, 2)
+
+knitr::kable(
+  table2_show,
+  caption = "Replication of selected rows from Table 2"
+)
+```
+
+Several patterns stand out. First, the chain composition is broadly similar across states. Both New Jersey and Pennsylvania contain stores from the same major fast-food chains, which helps because the establishments are operating in very similar product markets.
+
+Second, before the policy change, the average starting wage is relatively similar in the two states. That matters because it suggests the labor market conditions were not completely different at baseline. After the law changed, however, average starting wages in New Jersey rose substantially while Pennsylvania’s did not. This confirms that the treatment was real and that the minimum-wage law actually affected wages at many New Jersey stores.
+
+Third, average FTE employment is initially somewhat lower in New Jersey than in Pennsylvania. This is exactly why the DID framework is necessary. If I compared only the employment levels after the policy, I would miss the fact that the two states were already different beforehand. The correct question is not which state has more employment in absolute terms, but whether New Jersey’s employment changed differently over time after the policy shock.
+
+Finally, the full-meal price appears to rise somewhat more in New Jersey than in Pennsylvania. This already hints at one mechanism of adjustment. If restaurants can pass some of their higher labor costs on to consumers through prices, then employment may not need to fall as sharply as the simplest competitive model predicts.
+
+# Replication of Table 3: The Main Difference-in-Differences Result
+
+The assignment specifically requires the **nine numbers in Table 3, columns 1–3 and rows 1–3**. These numbers contain the core descriptive DID result in the paper.
+
+```{r}
+#| label: table3-replication
+#| results: asis
+
+table3_show <- table3_rep
+table3_show$PA <- round(table3_show$PA, 2)
+table3_show$NJ <- round(table3_show$NJ, 2)
+table3_show$`NJ - PA` <- round(table3_show$`NJ - PA`, 2)
+
+knitr::kable(
+  table3_show,
+  caption = "Replication of Table 3 (rows 1–3, columns 1–3, plus the NJ-PA difference)"
+)
+```
+
+The key number is the DID estimate:
+
+\[
+(\Delta NJ) - (\Delta PA) = `r fmt2(nj_change)` - (`r fmt2(pa_change)`) = `r fmt2(did_raw)`.
+\]
+
+This is the heart of the paper. Employment in Pennsylvania **falls** over the period, while employment in New Jersey is approximately flat or slightly rising. As a result, New Jersey’s employment change is more favorable than Pennsylvania’s after the minimum-wage increase.
+
+This pattern directly contradicts the simplest version of the standard competitive model. If a binding minimum wage necessarily reduced labor demand, I would expect New Jersey employment to fall relative to Pennsylvania. Instead, the DID estimate is positive.
+
+The magnitude is economically meaningful. A change of around `r fmt2(did_raw)` FTE workers per store is not trivial in the fast-food sector. Because restaurants are relatively small employers, a change of even a couple of workers per store is substantial. That is one reason the paper had such a large impact: the result was not merely statistically noisy, but substantively important.
+
+# Interpreting Table 3 More Carefully
+
+The Table 3 numbers are especially useful because they show exactly where the DID estimate comes from. Before the policy, Pennsylvania stores average **`r fmt2(pa_before)`** FTE workers and New Jersey stores average **`r fmt2(nj_before)`**. This means Pennsylvania stores are larger at baseline. If I stopped there and compared only levels, I might incorrectly conclude that Pennsylvania simply has the stronger labor market.
+
+After the policy, Pennsylvania stores average **`r fmt2(pa_after)`** FTE workers, while New Jersey stores average **`r fmt2(nj_after)`**. The cross-state gap becomes much smaller. The critical point is that the relative trend changes. Pennsylvania loses employment over the period, while New Jersey does not.
+
+This is precisely why DID is the correct framework. It prevents me from confusing pre-existing cross-state differences with the effect of the policy. It also sharpens the research question: did New Jersey move differently from Pennsylvania after the law changed? In this replication, the answer is yes, and the difference goes in the direction of **no job loss**.
+
+# Replication of Table 4, Column (i)
+
+The assignment also requires replication of **Table 4 column (i)**. In the paper, this is the regression of the change in FTE employment on a New Jersey dummy:
+
+\[
+\Delta FTE_i = \alpha + \beta \cdot NJ_i + \varepsilon_i.
+\]
+
+The coefficient on the New Jersey dummy is the regression analogue of the DID estimate in the paper’s restricted regression sample.
+
+```{r}
+#| label: table4-col1-replication
+#| results: asis
+
+tab4_col1 <- data.frame(
+  Term = c("New Jersey dummy", "Standard error", "t statistic", "Observations"),
+  Value = c(round(coef_t4c1, 2), round(se_t4c1, 2), round(t_t4c1, 2), n_t4c1)
+)
+
+knitr::kable(
+  tab4_col1,
+  caption = "Replication of Table 4, column (i)"
+)
+```
+
+My estimated coefficient on the New Jersey dummy is **`r fmt2(coef_t4c1)`**, with a standard error of **`r fmt2(se_t4c1)`**. This is close to the paper’s reported estimate of about **2.33**. The interpretation is that, on average, New Jersey restaurants increased employment by roughly 2.3 FTE workers more than Pennsylvania restaurants in the restricted regression sample.
+
+This replication matters because it shows that the main result is not just an artifact of one descriptive table. Once the same comparison is placed in a regression framework, the conclusion is the same. The treatment-state coefficient remains positive rather than negative.
+
+# Summary of the Main Replicated Results
+
+To summarize the most important quantities in one place, I report them below.
+
+```{r}
+#| label: key-results-summary
+#| results: asis
+
+compare_show <- compare_main
+compare_show$My_replication <- round(compare_show$My_replication, 2)
+
+knitr::kable(
+  compare_show,
+  caption = "Summary of main replicated quantities"
+)
+```
+
+Overall, the replication matches the paper closely enough to support the same substantive interpretation. Minor discrepancies can arise because of choices about missing values, rounding, sample restrictions, or the treatment of unusual store statuses. But the core pattern is very stable: the point estimates do **not** support the claim that the New Jersey minimum-wage increase reduced fast-food employment.
+
+# Additional Analysis Part 1: A Graphical Presentation of the Main Result
+
+For the assignment’s required “do one additional thing” component, I first present the main DID result graphically. This is useful because the original paper emphasizes the result in tables, but a graph makes the logic of difference-in-differences much easier to see.
+
+```{r}
+#| label: did-graph
+#| fig-width: 8
+#| fig-height: 5
+
+plot_mat <- rbind(
+  did_plot$PA,
+  did_plot$NJ
+)
+
+colnames(plot_mat) <- c("Before", "After")
+rownames(plot_mat) <- c("Pennsylvania", "New Jersey")
+
+bp <- barplot(
+  plot_mat,
+  beside = TRUE,
+  ylim = c(0, max(plot_mat) + 4),
+  ylab = "Average FTE employment",
+  main = "Difference-in-Differences in Fast-Food Employment",
+  legend.text = rownames(plot_mat),
+  args.legend = list(x = "topright", bty = "n")
+)
+
+text(
+  x = bp,
+  y = as.vector(plot_mat) + 0.5,
+  labels = round(as.vector(plot_mat), 2),
+  cex = 0.9
+)
+```
+
+The graph makes the paper’s central finding easy to visualize. Pennsylvania starts with higher average employment but then experiences a decline. New Jersey begins at a lower level but remains roughly stable or rises slightly. The gap between the two states narrows after the policy, which is the opposite of what one would expect if the higher minimum wage caused a large reduction in employment.
+
+This graphical presentation adds value beyond the table because it shows the identification strategy visually. The DID estimate is literally the difference in the slopes of these two before-after changes. In that sense, the graph is a natural extension of the main statistical finding rather than just a decorative figure.
+
+# Additional Analysis Part 2: Did Firms Adjust Through Prices?
+
+A second useful extension is to examine whether restaurants responded along another margin besides employment. If labor costs rose in New Jersey, one possible adjustment mechanism is that restaurants passed some of those costs through to consumers via higher prices. The paper discusses this possibility, and it is economically important because it helps explain how employment could remain stable even when wages rose.
+
+I estimate a simple DID-style regression of the change in the log price of a full meal on the New Jersey dummy.
+
+```{r}
+#| label: price-regression
+#| results: asis
+
+price_tab <- data.frame(
+  Term = c("New Jersey dummy", "Standard error", "t statistic", "Observations"),
+  Value = c(round(coef_price, 3), round(se_price, 3), round(t_price, 2), n_price)
+)
+
+knitr::kable(
+  price_tab,
+  caption = "Additional analysis: DID regression for the change in log meal price"
+)
+```
+
+The estimated New Jersey coefficient is **`r fmt3(coef_price)`**, which implies that meal prices rose by about **`r fmt2(100 * coef_price)`%** more in New Jersey than in Pennsylvania over the study period. This result is economically sensible. If higher labor costs were partly passed through to customers, then restaurants would not need to reduce employment one-for-one in response to the higher wage floor.
+
+This price result therefore complements the main employment finding. Instead of treating the labor market in isolation, it suggests that firms adjusted on multiple margins. That makes the overall result much more plausible: higher wages need not necessarily translate into fewer jobs if some adjustment occurs through prices, margins, productivity, or other channels.
+
+# Additional Analysis Part 3: Regression with Controls
+
+As a further extension, I estimate a regression that adds chain fixed effects and an ownership indicator. This is not required by the assignment, but it helps show that the basic result is not driven purely by the composition of restaurants.
+
+```{r}
+#| label: controlled-regression
+#| results: asis
+
+control_tab <- data.frame(
+  Term = c("New Jersey dummy", "Standard error", "t statistic"),
+  Value = c(round(coef_chain, 2), round(se_chain, 2), round(t_chain, 2))
+)
+
+knitr::kable(
+  control_tab,
+  caption = "Additional analysis: employment regression with chain and ownership controls"
+)
+```
+
+The coefficient on the New Jersey dummy remains **`r fmt2(coef_chain)`** after including controls for restaurant chain and company ownership. This reinforces the main conclusion. The positive relative employment effect is not simply a byproduct of New Jersey having a different mix of Burger King, KFC, Roy Rogers, or Wendy’s outlets.
+
+Adding controls is also useful from an econometric perspective because it reduces concern that changes in employment are picking up compositional differences across chains rather than the effect of the minimum-wage increase itself. Even after these adjustments, the result does not turn negative.
+
+# Why the Statistical Method Supports a Causal Conclusion
+
+Another acceptable way to satisfy the assignment’s “do one additional thing” requirement is to explain why the statistical method allows the authors to draw a causal conclusion. I do that here explicitly.
+
+The reason DID can support causal inference is that it compares the treated group to a counterfactual trend. Instead of asking whether New Jersey restaurants had lower employment after the policy, it asks whether New Jersey restaurants changed differently than similar restaurants in Pennsylvania over the same period. That is a much stronger design because it controls for two major confounders:
+
+1. **Permanent baseline differences across states.**  
+   New Jersey and Pennsylvania stores do not start at the same employment level, but DID differences those permanent differences out.
+
+2. **Common time shocks.**  
+   If the regional economy weakened between the first and second survey waves, that could reduce employment in both states. DID subtracts out these shared macro trends as long as they affect both groups similarly.
+
+Under the parallel-trends assumption, the remaining difference in employment changes can be interpreted as the causal effect of the policy. This is why DID is one of the most widely used methods in applied microeconomics.
+
+That said, the design still has limits. The biggest one is that there is only a short pre-period, so parallel trends cannot be tested in a convincing way using multiple pre-treatment years. The data also come from telephone surveys rather than administrative payroll records, which may introduce measurement error. Finally, standard errors may differ slightly from the paper’s depending on exact sample restrictions and whether one clusters or adjusts them differently. These limitations do not eliminate the value of the design, but they are important to acknowledge in any careful replication.
+
+# Comparison to the Conventional Model
+
+One reason this paper matters so much is that it challenged the simplest version of the conventional competitive model. In that model, a higher wage floor raises labor costs and should lead firms to hire fewer low-wage workers. If that mechanism operated strongly in this setting, I would expect New Jersey employment to fall relative to Pennsylvania after the wage increase.
+
+That is not what I find. The descriptive DID estimate is positive, the regression estimate is positive, the graphical evidence tells the same story, and the price analysis suggests firms may have adjusted in part through product prices instead of employment cuts.
+
+This does not prove that minimum wages can never reduce employment. It does show, however, that the effect is ultimately an empirical question rather than something that can be assumed from theory alone. The Card and Krueger paper helped shift the literature in exactly that direction: away from relying exclusively on simple theory and toward careful causal identification with real policy variation.
+
+# Conclusion
+
+This replication reproduces the main message of **Card and Krueger (1994)**. Using the fast-food restaurant survey data from New Jersey and Pennsylvania, I replicated selected descriptive statistics from **Table 2**, the required **nine numbers from Table 3**, and the key regression result from **Table 4 column (i)**. Across these exercises, the same conclusion emerges: the 1992 increase in New Jersey’s minimum wage does **not** appear to have reduced fast-food employment relative to Pennsylvania.
+
+The main descriptive DID estimate is approximately **`r fmt2(did_raw)`** FTE workers per store, and the regression estimate for the New Jersey dummy is approximately **`r fmt2(coef_t4c1)`**. Both are inconsistent with the claim that the minimum-wage increase caused a fall in employment in this setting.
+
+For the additional part of the assignment, I went beyond basic replication in three ways. First, I graphed the DID pattern so the logic of the identification strategy is visually clear. Second, I estimated a price regression showing that meal prices rose somewhat more in New Jersey, suggesting that firms may have adjusted through prices rather than layoffs. Third, I explained why DID is the correct research design here and how it supports a causal interpretation under the parallel-trends assumption.
+
+Overall, this replication shows why Card and Krueger (1994) remains such a foundational paper in empirical economics. Its importance is not just that it found an unexpected result, but that it used a transparent empirical design to challenge a deeply rooted theoretical prediction. That combination of a clear research question, a credible identification strategy, and a surprising but well-documented result is exactly what makes the paper a classic.
