@@ -25,5 +25,35 @@
   },
   "blog/homework2/hw2_questions.qmd": {
     "hw2_questions.html": "c1d94081"
+  },
+  "rsm-qih029.github.io/resume.qmd": {
+    "resume.html": "7221180c"
+  },
+  "rsm-qih029.github.io/hobbies.qmd": {
+    "hobbies.html": "7e987899"
+  },
+  "rsm-qih029.github.io/index.qmd": {
+    "index.html": "1918dbd8"
+  },
+  "rsm-qih029.github.io/blog/hw2/index.qmd": {
+    "index.html": "0a1e4b02"
+  },
+  "rsm-qih029.github.io/blog/project1/index.qmd": {
+    "index.html": "d3fe3089"
+  },
+  "rsm-qih029.github.io/blog/hw1/index.qmd": {
+    "index.html": "7e65e713"
+  },
+  "rsm-qih029.github.io/blog/project2/index.qmd": {
+    "index.html": "3a3991ff"
+  },
+  "rsm-qih029.github.io/html_resume.Rmd": {
+    "html_resume.html": "44a0b4fd"
+  },
+  "rsm-qih029.github.io/blog.qmd": {
+    "blog.html": "bf5fbb24"
+  },
+  "blog/homework3/hw3_questions.qmd": {
+    "hw3_questions.html": "9c4ef64b"
   }
 }
